@@ -12,7 +12,7 @@ const ProductPrice = ({
 
   return (
     <p className={cn("text-2xl font-semibold", className)}>
-      <span className="text-xs -translate-y-2 inline-block">$</span>
+      <span className="text-xs -translate-y-2 inline-block text-center">$</span>
       {integerPart}
       <span className="text-xs -translate-y-2 inline-block">
         .{decimalPart}

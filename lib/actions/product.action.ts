@@ -1,14 +1,13 @@
 "use server";
-import { PrismaClient } from "../generated/prisma/client";
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
 import { convertToPlainObject } from "../utils";
+import prisma from "@/db/prisma";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
-
-const prisma = new PrismaClient({ adapter });
 
 export async function getLatestProducts() {
   try {
@@ -21,4 +20,10 @@ export async function getLatestProducts() {
     console.error("Error fetching products:", err);
     return [];
   }
+}
+
+export async function getProductBySlug(slug: string) {
+  return prisma.product.findFirst({
+    where: { slug: slug },
+  });
 }
