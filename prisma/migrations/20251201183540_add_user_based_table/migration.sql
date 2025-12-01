@@ -7,7 +7,7 @@ CREATE TABLE "User" (
     "image" TEXT,
     "password" TEXT,
     "role" TEXT NOT NULL DEFAULT 'user',
-    "address" JSONB NOT NULL,
+    "address" JSONB,
     "paymentMethod" TEXT,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

@@ -42,7 +42,7 @@ model User {
   image         String?
   password      String?
   role          String    @default("user")
-  address       Json
+  address       Json?
   paymentMethod String?
   createdAt     DateTime  @default(now()) @db.Timestamp(6)
   updatedAt     DateTime  @updatedAt

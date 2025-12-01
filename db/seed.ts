@@ -14,6 +14,13 @@ async function main() {
   try {
     // Delete all existing products
     await prisma.product.deleteMany({});
+    await prisma.user.deleteMany({});
+    await prisma.account.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.verificationToken.deleteMany({});
+
+    // Seed users
+    await prisma.user.createMany({ data: sampleData.users });
 
     for (const product of sampleData.products) {
       await prisma.product.create({
