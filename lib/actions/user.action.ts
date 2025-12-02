@@ -3,7 +3,6 @@
 import { signIn, signOut } from "@/auth";
 import { signInFormSchema } from "../validators";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-
 export async function signInWithCredentials(
   prevState: unknown,
   formData: FormData
@@ -19,7 +18,7 @@ export async function signInWithCredentials(
     if (isRedirectError(err)) {
       throw err;
     }
-    return { success: false, message: "Invalid password" };
+    return { success: false, message: "Invalid email or password" };
   }
 }
 

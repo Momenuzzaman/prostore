@@ -40,7 +40,37 @@ export const config = {
       },
     }),
   ],
+  // callbacks: {
+  //   async session({ session, token, trigger, user }: any) {
+  //     //set the user id and role to session
+  //     session.user.id = token.sub;
+  //     //if there is an update, set the user name
+  //     if (trigger === "update") {
+  //       session.user.name = user.name;
+  //     }
+
+  //     return session;
+  //   },
+  // },
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnSignIn = nextUrl.pathname.startsWith("/sign-in");
+      const isOnSignUp = nextUrl.pathname.startsWith("/sign-up");
+
+      // Allow access to sign-in and sign-up pages
+      if (isOnSignIn || isOnSignUp) {
+        return true;
+      }
+
+      // For protected routes, redirect to sign-in if not logged in
+      if (!isLoggedIn) {
+        return false; // This will redirect to sign-in page
+      }
+
+      return true;
+    },
+
     async session({ session, token, trigger, user }: any) {
       //set the user id and role to session
       session.user.id = token.sub;
