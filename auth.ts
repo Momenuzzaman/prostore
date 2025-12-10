@@ -169,7 +169,7 @@ export const config = {
      */
     async session({ session, token, trigger, user }) {
       session.user.id = token.sub!;
-      session.user.role = token.role;
+      session.user.role = typeof token.role === "string" ? token.role : "user";
       session.user.name = token.name;
 
       // When session.update() is called
@@ -184,6 +184,7 @@ export const config = {
      * JWT callback — MUST ALWAYS RETURN TOKEN
      */
     async jwt({ token, user, trigger }) {
+      console.log(token, user, trigger);
       // When logging in for the first time
       if (user) {
         token.role = user.role;

@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
-import { sl } from "zod/v4/locales";
 const currency = z
   .string()
   .refine(
