@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const AddToCart = ({ item }: { item: CartItem }) => {
-  console.log(item);
   const router = useRouter();
 
   const handleAddToCart = async () => {
@@ -17,7 +16,7 @@ const AddToCart = ({ item }: { item: CartItem }) => {
       return;
     }
 
-    toast.success(`${item.name} added to cart successfully`, {
+    toast.success(res.message, {
       action: {
         label: (
           <span className="bg-primary text-white hover:bg-gray-800">
