@@ -4,7 +4,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import type { NextAuthConfig } from "next-auth";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 export const config = {
   providers: [
@@ -46,21 +45,7 @@ export const config = {
 
   callbacks: {
     /**
-     * Protect routes
-     */
-    // authorized({ auth, request: { nextUrl } }) {
-    //   const isLoggedIn = !!auth?.user;
-    //   const isOnSignIn = nextUrl.pathname.startsWith("/sign-in");
-    //   const isOnSignUp = nextUrl.pathname.startsWith("/sign-up");
 
-    //   if (isOnSignIn || isOnSignUp) return true;
-
-    //   if (!isLoggedIn) return false;
-
-    //   return true;
-    // },
-
-    /**
      * Add fields to session
      */
     async session({ session, token, trigger, user }) {
@@ -68,7 +53,7 @@ export const config = {
       session.user.role = typeof token.role === "string" ? token.role : "user";
       session.user.name = token.name;
 
-      // When session.update() is called
+      // When session.update
       if (trigger === "update" && user?.name) {
         session.user.name = user.name;
       }

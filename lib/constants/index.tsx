@@ -15,3 +15,11 @@ export const signUpDefaultValues = {
   password: "",
   confirmPassword: "",
 };
+
+export const ShippingAddressDefaultValues = {
+  fullname: "Md Emon",
+  streetAddress: "Ancercamp",
+  city: "Dhaka",
+  postalCode: "1216",
+  country: "Bangladesh",
+};

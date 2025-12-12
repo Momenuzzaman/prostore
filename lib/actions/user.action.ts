@@ -5,7 +5,6 @@ import { signInFormSchema, signUpFormSchema } from "../validators";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashSync } from "bcrypt-ts-edge";
 import prisma from "@/db/prisma";
-import { format } from "path";
 import { formatError } from "../utils";
 
 export async function signInWithCredentials(
@@ -63,4 +62,13 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
     }
     return { success: false, message: formatError(err) };
   }
+}
+
+// Get user by id
+export async function getUserById(userId: string) {
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+  });
+  if (!user) throw new Error("User not found");
+  return user;
 }
