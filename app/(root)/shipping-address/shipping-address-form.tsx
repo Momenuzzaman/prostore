@@ -180,9 +180,9 @@
 import { shippingAddressSchema } from "@/lib/validators";
 import { ShippingAddress } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useTransition } from "react";
+import { startTransition, useTransition } from "react";
 import {
   Form,
   FormControl,
@@ -194,17 +194,31 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader } from "lucide-react";
+import { updateUserAddress } from "@/lib/actions/user.action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { ShippingAddressDefaultValues } from "@/lib/constants";
 
 function ShippingAddressForm({ address }: { address: ShippingAddress }) {
   const form = useForm<z.infer<typeof shippingAddressSchema>>({
     resolver: zodResolver(shippingAddressSchema),
-    defaultValues: address,
+    defaultValues: address || ShippingAddressDefaultValues,
   });
-
+  const router = useRouter();
   const [isPending] = useTransition();
 
-  const onSubmit = (values: z.infer<typeof shippingAddressSchema>) => {
-    console.log(values);
+  // 2️ Infer TypeScript type from Zod schema
+  type ShippingAddressType = z.infer<typeof shippingAddressSchema>;
+  const onSubmit: SubmitHandler<ShippingAddressType> = async (values) => {
+    startTransition(async () => {
+      const res = await updateUserAddress(values);
+
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
+      router.push("/payment-method");
+    });
   };
 
   return (

@@ -17,7 +17,7 @@ export const signUpDefaultValues = {
 };
 
 export const ShippingAddressDefaultValues = {
-  fullname: "Md Emon",
+  fullName: "Md Momenuzzaman",
   streetAddress: "Ancercamp",
   city: "Dhaka",
   postalCode: "1216",

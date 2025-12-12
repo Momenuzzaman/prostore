@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import type { NextAuthConfig } from "next-auth";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 export const config = {
   providers: [
     CredentialsProvider({
@@ -67,6 +68,7 @@ export const config = {
     async jwt({ token, user, trigger }) {
       // When logging in for the first time
       if (user) {
+        token.sub = user.id;
         token.role = user.role;
 
         if (user.name === "NO_NAME") {
@@ -79,11 +81,50 @@ export const config = {
         } else {
           token.name = user.name;
         }
+        if (trigger === "signIn" || trigger === "signUp") {
+          const cookiesObject = await cookies();
+          const sessionCardId = cookiesObject.get("sessionCartId")?.value;
+
+          if (sessionCardId) {
+            const sessionCart = await prisma.cart.findFirst({
+              where: { sessionCartId: sessionCardId },
+            });
+            if (sessionCart) {
+              // delete current user cart
+              await prisma.cart.deleteMany({
+                where: { userId: user.id },
+              });
+              await prisma.cart.update({
+                where: { id: sessionCart.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
       }
 
       return token; // IMPORTANT — always return token
     },
     authorized({ request, auth }: any) {
+      // Array of regex patterns for paths we want to protect
+      const protectedPaths = [
+        /\/shipping-address/,
+        /\/payment-method/,
+        /\/place-order/,
+        /\/profile/,
+        /\/user\/(.+)/,
+        /\/order\/(.+)/,
+        /\/admin/,
+      ];
+
+      // Get pathname from the request URL object
+      const { pathname } = request.nextUrl;
+
+      // Check if the current path matches any of the protected paths
+      if (protectedPaths.some((pattern) => pattern.test(pathname))) {
+        return false;
+      }
+
       if (!request.cookies.get("sessionCartId")) {
         // Generate a random sessionCartId and set it as a cookie
         const sessionCartId = crypto.randomUUID();
