@@ -105,8 +105,47 @@ export const config = {
 
       return token; // IMPORTANT — always return token
     },
-    authorized({ request, auth }: any) {
-      // Array of regex patterns for paths we want to protect
+    // authorized({ request, auth }: any) {
+    //   // Array of regex patterns for paths we want to protect
+    //   const protectedPaths = [
+    //     /\/shipping-address/,
+    //     /\/payment-method/,
+    //     /\/place-order/,
+    //     /\/profile/,
+    //     /\/user\/(.+)/,
+    //     /\/order\/(.+)/,
+    //     /\/admin/,
+    //   ];
+
+    //   // // Get pathname from the request URL object
+    //   const { pathname } = request.nextUrl;
+
+    //   // Check if the current path matches any of the protected paths
+    //   if (protectedPaths.some((pattern) => pattern.test(pathname))) {
+    //     return false;
+    //   }
+
+    //   if (!request.cookies.get("sessionCartId")) {
+    //     // Generate a random sessionCartId and set it as a cookie
+    //     const sessionCartId = crypto.randomUUID();
+
+    //     // Clone the req header
+    //     const newRequestHeaders = new Headers(request.headers);
+
+    //     // Create new response and add the new headers
+    //     const response = NextResponse.next({
+    //       request: {
+    //         headers: newRequestHeaders,
+    //       },
+    //     });
+    //     //  set newly generated sessionCartId as a cookie
+    //     response.cookies.set("sessionCartId", sessionCartId);
+    //     return response;
+    //   } else {
+    //     return true;
+    //   }
+    // },
+    authorized({ request, auth }) {
       const protectedPaths = [
         /\/shipping-address/,
         /\/payment-method/,
@@ -117,39 +156,37 @@ export const config = {
         /\/admin/,
       ];
 
-      // Get pathname from the request URL object
       const { pathname } = request.nextUrl;
 
-      // Check if the current path matches any of the protected paths
-      if (protectedPaths.some((pattern) => pattern.test(pathname))) {
-        return false;
+      const isProtected = protectedPaths.some((pattern) =>
+        pattern.test(pathname)
+      );
+
+      // If route is protected and user not logged in → block
+      if (isProtected) {
+        return !!auth?.user; // ✅ allow if user exists
       }
 
+      // Session cart cookie logic
       if (!request.cookies.get("sessionCartId")) {
-        // Generate a random sessionCartId and set it as a cookie
         const sessionCartId = crypto.randomUUID();
-
-        // Clone the req header
         const newRequestHeaders = new Headers(request.headers);
 
-        // Create new response and add the new headers
         const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders,
-          },
+          request: { headers: newRequestHeaders },
         });
-        //  set newly generated sessionCartId as a cookie
+
         response.cookies.set("sessionCartId", sessionCartId);
         return response;
-      } else {
-        return true;
       }
+
+      return true;
     },
   },
 
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/signin",
+    signIn: "/sign-in",
+    error: "/sign-in",
   },
 
   session: {

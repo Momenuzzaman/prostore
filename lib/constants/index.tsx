@@ -23,3 +23,9 @@ export const ShippingAddressDefaultValues = {
   postalCode: "1216",
   country: "Bangladesh",
 };
+
+export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
+  ? process.env.PAYMENT_METHODS.split(", ")
+  : ["PayPal", "Stripe", "CashOnDelivery"];
+export const DEFAULT_PAYMENT_METHOD =
+  process.env.DEFAULT_PAYMENT_METHOD || "PayPal";
