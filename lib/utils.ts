@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { da } from "zod/v4/locales";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -91,4 +92,49 @@ export function formatCurrency(amount: number | string | null) {
   } else {
     return "NaN";
   }
+}
+
+// Formate Id
+export function formateId(id: string) {
+  return `..${id.substring(id.length - 6)}`;
+}
+
+// Formate Date and time
+export function formateDateTime(dateString: Date) {
+  const dateTimeOptions: Intl.DateTimeFormatOptions = {
+    month: "short",
+    year: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  };
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  };
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  };
+  const formattedDateTime: string = new Date(dateString).toLocaleString(
+    "en-US",
+    dateTimeOptions
+  );
+  const formattedDate: string = new Date(dateString).toLocaleString(
+    "en-US",
+    dateOptions
+  );
+  const formattedTime: string = new Date(dateString).toLocaleString(
+    "en-US",
+    timeOptions
+  );
+  return {
+    dateTime: formattedDateTime,
+    date: formattedDate,
+    time: formattedTime,
+  };
 }

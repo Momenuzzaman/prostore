@@ -1,7 +1,10 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { createOder } from "@/lib/actions/order.actions";
 import { Check, Loader } from "lucide-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+
 import { useFormStatus } from "react-dom";
 
 const PlaceOrderForm = () => {
