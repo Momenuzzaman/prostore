@@ -12,17 +12,13 @@ import { formatCurrency, formateDateTime, formateId } from "@/lib/utils";
 import { Order } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import PlaceOrderForm from "../../place-order/place-order-form";
 
 const OrderDetailsTable = ({ order }: { order: Order }) => {
   const {
     id,
-    createdAt,
     isPaid,
-    isDelivered,
     orderItems,
     shippingAddress,
-    user,
     paymentMethod,
     paidAt,
     deliveredAt,
@@ -125,7 +121,6 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
-              <PlaceOrderForm />
             </CardContent>
           </Card>
         </div>

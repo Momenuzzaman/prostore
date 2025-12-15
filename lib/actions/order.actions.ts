@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import { getMyCart } from "./cart.action";
 import { getUserById } from "./user.action";
 import { insertOrderSchema } from "../validators";
-import { CartItem, Order } from "@/types";
+import { CartItem, Order, ShippingAddress } from "@/types";
 import prisma from "@/db/prisma";
 
 export async function createOder() {
@@ -94,7 +94,11 @@ export async function createOder() {
   }
 }
 
-export async function getOrderById(orderId: string) {
+type OrderResult =
+  | { success: true; data: Order }
+  | { success: false; message: string };
+
+export async function getOrderById(orderId: string): Promise<OrderResult> {
   try {
     const order = await prisma.order.findFirst({
       where: { id: orderId },
@@ -109,9 +113,22 @@ export async function getOrderById(orderId: string) {
       },
     });
 
-    if (!order) throw new Error("Order not found");
+    if (!order) {
+      return {
+        success: false,
+        message: "Order not found",
+      };
+    }
 
-    return convertToPlainObject(order);
+    const plainOrder = convertToPlainObject(order);
+
+    return {
+      success: true,
+      data: {
+        ...plainOrder,
+        shippingAddress: plainOrder.shippingAddress as ShippingAddress,
+      } as Order,
+    };
   } catch (error) {
     return {
       success: false,
