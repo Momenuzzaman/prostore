@@ -65,7 +65,7 @@ export const config = {
     /**
      * JWT callback — MUST ALWAYS RETURN TOKEN
      */
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger, session }) {
       // When logging in for the first time
       if (user) {
         token.sub = user.id;
@@ -102,7 +102,9 @@ export const config = {
           }
         }
       }
-
+      if (session?.user.name && "trigger") {
+        token.name = session.user.name;
+      }
       return token; // IMPORTANT — always return token
     },
     // authorized({ request, auth }: any) {

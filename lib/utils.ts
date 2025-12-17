@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { da } from "zod/v4/locales";
+import queryString from "query-string";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -94,6 +94,13 @@ export function formatCurrency(amount: number | string | null) {
   }
 }
 
+// Format number
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-US");
+
+export function formatNumber(number: number) {
+  return NUMBER_FORMATTER.format(number);
+}
+
 // Formate Id
 export function formateId(id: string) {
   return `..${id.substring(id.length - 6)}`;
@@ -137,4 +144,28 @@ export function formateDateTime(dateString: Date) {
     date: formattedDate,
     time: formattedTime,
   };
+}
+
+export function formUrlQuery({
+  params,
+  key,
+  value,
+}: {
+  params: string;
+  key: string;
+  value: string | null;
+}) {
+  const query = queryString.parse(params);
+
+  query[key] = value;
+
+  return queryString.stringify(
+    {
+      url: window.location.pathname,
+      query,
+    },
+    {
+      skipNull: true,
+    }
+  );
 }
