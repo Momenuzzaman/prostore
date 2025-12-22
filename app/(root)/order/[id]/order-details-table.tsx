@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -8,12 +9,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  deliverOrder,
+  updateOrderToPaidCOD,
+} from "@/lib/actions/order.actions";
 import { formatCurrency, formateDateTime, formateId } from "@/lib/utils";
 import { Order } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
-const OrderDetailsTable = ({ order }: { order: Order }) => {
+const OrderDetailsTable = ({
+  order,
+  isAdmin,
+}: {
+  order: Order;
+  isAdmin: boolean;
+}) => {
   const {
     id,
     isPaid,
@@ -26,7 +39,61 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
     shippingPrice,
     taxPrice,
     itemsPrice,
+    isDelivered,
   } = order;
+
+  const MarkAsPaidButton = () => {
+    const [idPending, startTransition] = useTransition();
+
+    return (
+      <Button
+        type="button"
+        disabled={idPending}
+        onClick={() =>
+          startTransition(() =>
+            startTransition(async () => {
+              const res = await updateOrderToPaidCOD(order.id);
+              if (!res.success) {
+                toast.error(res.message);
+                return;
+              }
+              toast.success(res.message);
+            })
+          )
+        }
+        className="btn btn-primary"
+      >
+        {idPending ? "Processing" : "Mark As Paid"}
+      </Button>
+    );
+  };
+
+  const MarkAsDeliveredButton = () => {
+    const [idPending, startTransition] = useTransition();
+
+    return (
+      <Button
+        type="button"
+        disabled={idPending}
+        onClick={() =>
+          startTransition(() =>
+            startTransition(async () => {
+              const res = await deliverOrder(order.id);
+              if (!res.success) {
+                toast.error(res.message);
+                return;
+              }
+              toast.success(res.message);
+            })
+          )
+        }
+        className="btn btn-primary"
+      >
+        {idPending ? "Processing" : "Mark As Paid"}
+      </Button>
+    );
+  };
+
   return (
     <>
       <h1 className="py-4 text-2xl">Order {formateId(id)}</h1>
@@ -53,9 +120,9 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                 {shippingAddress.streetAddress}, {shippingAddress.city},{" "}
                 {shippingAddress.postalCode}, {shippingAddress.country}
               </p>
-              {isPaid ? (
+              {isDelivered ? (
                 <Badge variant="secondary">
-                  Paid at {formateDateTime(deliveredAt!).dateTime}
+                  Delivered at {formateDateTime(deliveredAt!).dateTime}
                 </Badge>
               ) : (
                 <Badge variant="destructive">Not Delivered</Badge>
@@ -121,6 +188,11 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
+              {/* cash on delivery */}
+              {isAdmin && !isPaid && paymentMethod === "CashOnDelivery" && (
+                <MarkAsPaidButton />
+              )}{" "}
+              {isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />}
             </CardContent>
           </Card>
         </div>
