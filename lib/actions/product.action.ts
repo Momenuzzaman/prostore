@@ -40,6 +40,7 @@ export async function getAllProducts({
   category?: string;
 }) {
   const data = await prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
     skip: (page - 1) * limit,
     take: limit,
   });
@@ -118,4 +119,13 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
       message: formatError(error),
     };
   }
+}
+
+// Get single product by it's ID
+export async function getProductById(productId: string) {
+  const data = await prisma.product.findFirst({
+    where: { id: productId },
+  });
+
+  return convertToPlainObject(data);
 }
